@@ -44,6 +44,16 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
 
+    # There's no need to ship if the product is digital.
+    @property
+    def shipping(self):
+        shipping = False
+        orderitems = self.orderitem_set.all()
+        for i in orderitems:
+            if not i.product.digital:
+                shipping = True
+        return shipping
+
     @property
     def get_cart_total(self):
         orderitems = self.orderitem_set.all()
