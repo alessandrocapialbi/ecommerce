@@ -17,4 +17,26 @@ for (i = 0; i < updateBtns.length; i++) {
 
 function updateUserOrder(productId, action) {
     console.log("User is authenticated, sending data!")
+    var url = '/update_item/'
+
+    //Fetch API lets us send data to the view.
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body: JSON.stringify({'productId': productId, 'action': action})
+    })
+
+        .then((response) => {
+            return response.json()
+        })
+
+        .then((data) => {
+            console.log('data', data)
+        })
+
+
 }
