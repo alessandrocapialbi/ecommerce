@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
-
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=100, null=True)
@@ -14,30 +13,44 @@ class Customer(models.Model):
         return self.name
 
 
-class User(models.Model):
-    username = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
-    first_name = models.CharField(max_length=100, null=True)
-    last_name = models.CharField(max_length=200, null=True)
-    email = models.CharField(max_length=200, null=True)
-
-    def __str__(self):
-        return self.first_name
-
-
 class Product(models.Model):
     name = models.CharField(max_length=100, null=True)
     price = models.FloatField()
-    digital = models.BooleanField(default=False, null=True, blank=False)
+    digital = models.BooleanField(default=False, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
 
+# There is a One-to-Many relationship between Order and Customer. A customer can place multiple orders in different
+# times.
 class Order(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, NULL=True, blank=True)
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
     complete = models.BooleanField(default=False)
     transaction_id = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return str(self.id)
+
+
+# OrderItem represents every item listed in our cart. There is a One-to-Many relationship between Order and
+# OrderItem. Also with Product.
+class OrderItem(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField(default=0, null=True, blank=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+
+class ShippingAddress(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
+    order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
+    address = models.CharField(max_length=200, null=True)
+    city = models.CharField(max_length=100, null=True)
+    state = models.CharField(max_length=100, null=True)
+    zipcode = models.CharField(max_length=50, null=True)
+    date_added = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.address
