@@ -22,9 +22,19 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except ValueError as ve:
+            url = ''
+        return url
+
 
 # There is a One-to-Many relationship between Order and Customer. A customer can place multiple orders in different
 # times.
+
+
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
