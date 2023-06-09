@@ -2,6 +2,7 @@ from django.shortcuts import render
 from .models import *
 from django.http import JsonResponse
 import json
+import datetime
 
 
 # Create your views here.
@@ -32,7 +33,7 @@ def cart(request):
         items = []
         order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
 
-    context = {'items': items, 'order': order, 'cartItems':cartItems}
+    context = {'items': items, 'order': order, 'cartItems': cartItems}
     return render(request, 'store/cart.html', context)
 
 
@@ -46,7 +47,7 @@ def checkout(request):
         items = []
         order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
 
-    context = {'items': items, 'order': order, 'cartItems':cartItems}
+    context = {'items': items, 'order': order, 'cartItems': cartItems}
     return render(request, 'store/checkout.html', context)
 
 
@@ -74,4 +75,32 @@ def updateItem(request):
     if orderItem.quantity <= 0:
         orderItem.delete()
 
-    return JsonResponse("Item has been added", safe=False)
+    return JsonResponse("Item has been added!", safe=False)
+
+
+def processOrder(request):
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        total = float(data['form']['total'])
+        order.transaction_id = transaction_id
+
+        if total == order.get_cart_total:
+            order.complete = True
+        order.save()
+
+        if order.shipping == True:
+            ShippingAddress.objects.create(
+                customer=customer,
+                order=order,
+                address=data['shipping']['address'],
+                city=data['shipping']['city'],
+                state=data['shipping']['state'],
+                zipcode=data['shipping']['zipcode']
+
+            )
+    else:
+        print('User is not logged in')
+    return JsonResponse("Payment complete!", safe=False)
