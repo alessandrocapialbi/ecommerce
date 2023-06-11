@@ -54,12 +54,10 @@ function updateUserOrder(productId, action) {
     })
 
         .then((response) => {
-            responseClone = response.clone();
             return response.json()
         })
 
         .then((data) => {
-            console.log('Error parsing JSON from response:', responseClone)
             console.log('data', data)
             location.reload()
         })
