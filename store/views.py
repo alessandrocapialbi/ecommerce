@@ -3,7 +3,7 @@ from .models import *
 from django.http import JsonResponse
 import json
 import datetime
-from .utils import cookieCart, cartData, guestOrder
+from .utils import cartData, guestOrder
 
 
 # Create your views here.
@@ -11,6 +11,8 @@ from .utils import cookieCart, cartData, guestOrder
 def store(request):
     data = cartData(request)
     cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
 
     products = Product.objects.all()
     context = {'products': products, 'cartItems': cartItems}
@@ -42,8 +44,8 @@ def updateItem(request):
     productId = data['productId']
     action = data['action']
 
-    print('action:', action)
-    print('productId:', productId)
+    print('Action:', action)
+    print('ProductId:', productId)
 
     customer = request.user.customer
     product = Product.objects.get(id=productId)
@@ -67,6 +69,7 @@ def updateItem(request):
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
+
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete=False)
@@ -87,7 +90,7 @@ def processOrder(request):
             address=data['shipping']['address'],
             city=data['shipping']['city'],
             state=data['shipping']['state'],
-            zipcode=data['shipping']['zipcode']
+            zipcode=data['shipping']['zipcode'],
         )
 
-    return JsonResponse("Payment complete!", safe=False)
+    return JsonResponse('Payment successful!', safe=False)

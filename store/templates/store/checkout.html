@@ -63,14 +63,14 @@
     </div>
     <script type="text/javascript">
         var shipping = '{{ order.shipping }}'
-        var total = '{{ order.get_cart_total}}'
+        var total = '{{ order.get_cart_total|floatformat:2}}'
         if (shipping == 'False')
             document.getElementById('shipping-info').innerHTML = ''
 
         if (user != "AnonymousUser")
             document.getElementById('user-info').innerHTML = ''
 
-        //Hide the entire form if the user is already logged in and the product is digital and has no need to be shipped. Show payment options, instead.
+        // Hide the entire form if the user is already logged in and the product is digital and has no need to be shipped. Show payment options, instead.
         if (shipping == 'False' && user != "AnonymousUser") {
             document.getElementById('form-wrapper').classList.add('hidden')
             document.getElementById('payment-info').classList.remove('hidden')
@@ -80,7 +80,7 @@
         csrftoken = form.getElementsByTagName("input")[0].value
         console.log('New token:', form.getElementsByTagName("input")[0].value)
 
-        form.addEventListener(("submit"), function (e) {
+        form.addEventListener(('submit'), function (e) {
             e.preventDefault()
             console.log('Form submitted!')
             document.getElementById('form-button').classList.add('hidden')
@@ -114,11 +114,11 @@
             }
 
             if (user == 'AnonymousUser') {
-                userFormData.name = form.address.value
+                userFormData.name = form.name.value
                 userFormData.email = form.email.value
             }
 
-            var url = '/process_order/'
+            var url = "/process_order/"
             fetch(url, {
                 method: 'POST',
                 headers: {

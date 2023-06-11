@@ -1,5 +1,6 @@
 var updateBtns = document.getElementsByClassName('update-cart')
 
+// When the user add a product we get productId and action in order to update the cart section
 for (i = 0; i < updateBtns.length; i++) {
     updateBtns[i].addEventListener('click', function () {
         var productId = this.dataset.product
@@ -19,15 +20,15 @@ function addCookieItem(productId, action) {
     console.log("Not authenticated")
     if (action == 'add') {
         if (cart[productId] == undefined) {
-            cart[productId] = {"quantity": 1}
+            cart[productId] = {'quantity': 1}
         } else {
-            cart[productId]["quantity"] += 1
+            cart[productId]['quantity'] += 1
         }
     }
 
     if (action == 'remove') {
-        cart[productId]["quantity"] -= 1
-        if (cart[productId]["quantity"] <= 0) {
+        cart[productId]['quantity'] -= 1
+        if (cart[productId]['quantity'] <= 0) {
             console.log('Remove item')
             delete cart[productId]
         }
@@ -41,7 +42,7 @@ function updateUserOrder(productId, action) {
     console.log("User is authenticated, sending data!")
     var url = '/update_item/'
 
-    //Fetch API lets us send data to the view.
+    // Fetch API lets us send data to the view.
 
     fetch(url, {
         method: 'POST',

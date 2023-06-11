@@ -3,35 +3,33 @@ from .models import *
 
 
 def cookieCart(request):
+    # Create empty cart for now for non-logged in user
     try:
         cart = json.loads(request.COOKIES['cart'])
     except:
         cart = {}
+        print('CART:', cart)
 
-    print('Cart:', cart)
     items = []
     order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
     cartItems = order['get_cart_items']
 
     for i in cart:
+        # We use try block to prevent items in cart that may have been removed from causing error
         try:
-            cartItems += cart[i]["quantity"]
+            cartItems += cart[i]['quantity']
 
             product = Product.objects.get(id=i)
-            total = (product.price * cart[i]["quantity"])
+            total = (product.price * cart[i]['quantity'])
 
             order['get_cart_total'] += total
-            order['get_cart_items'] += cart[i]["quantity"]
+            order['get_cart_items'] += cart[i]['quantity']
 
             item = {
-                'product': {
-                    'id': product.id,
-                    'name': product.name,
-                    'price': product.price,
-                    'imageURL': product.imageURL,
-                },
-                'quantity': cart[i]["quantity"],
-                'get_total': total
+                'id': product.id,
+                'product': {'id': product.id, 'name': product.name, 'price': product.price,
+                            'imageURL': product.imageURL}, 'quantity': cart[i]['quantity'],
+                'digital': product.digital, 'get_total': total,
             }
             items.append(item)
 
@@ -55,13 +53,10 @@ def cartData(request):
         order = cookieData['order']
         items = cookieData['items']
 
-    return {'items': items, 'order': order, 'cartItems': cartItems}
+    return {'cartItems': cartItems, 'order': order, 'items': items}
 
 
 def guestOrder(request, data):
-    print('User is not logged in')
-
-    print('Cookies:', request.COOKIES)
     name = data['form']['name']
     email = data['form']['email']
 
@@ -79,12 +74,11 @@ def guestOrder(request, data):
         complete=False,
     )
 
-    for i in items:
-        product = Product.objects.get(id=i['product']['id'])
-
+    for item in items:
+        product = Product.objects.get(id=item['id'])
         orderItem = OrderItem.objects.create(
             product=product,
             order=order,
-            quantity=i['quantity']
+            quantity=item['quantity'],
         )
     return customer, order
