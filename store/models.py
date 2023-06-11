@@ -22,6 +22,7 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    # Needed when we don't give an image to a product
     @property
     def imageURL(self):
         try:

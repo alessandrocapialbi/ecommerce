@@ -64,13 +64,19 @@
     <script type="text/javascript">
         var shipping = '{{ order.shipping }}'
         var total = '{{ order.get_cart_total|floatformat:2}}'
+
+        // If a product is digital, there's no need to ship the item.
+
         if (shipping == 'False')
             document.getElementById('shipping-info').innerHTML = ''
+
+        // If a user is authenticated, we already have his name and email.
 
         if (user != "AnonymousUser")
             document.getElementById('user-info').innerHTML = ''
 
         // Hide the entire form if the user is already logged in and the product is digital and has no need to be shipped. Show payment options, instead.
+
         if (shipping == 'False' && user != "AnonymousUser") {
             document.getElementById('form-wrapper').classList.add('hidden')
             document.getElementById('payment-info').classList.remove('hidden')
@@ -79,6 +85,8 @@
         var form = document.getElementById('form')
         csrftoken = form.getElementsByTagName("input")[0].value
         console.log('New token:', form.getElementsByTagName("input")[0].value)
+
+        // When the form has been submitted, we show payment options.
 
         form.addEventListener(('submit'), function (e) {
             e.preventDefault()
@@ -91,6 +99,7 @@
             submitFormData()
         })
 
+        // When a payment has been done, we need to store these information in the database.
         function submitFormData() {
             console.log('Payment Button clicked')
             var userFormData = {

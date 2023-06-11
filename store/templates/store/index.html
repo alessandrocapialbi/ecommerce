@@ -11,6 +11,8 @@
     <script type="text/javascript">
         var user = '{{ request.user }}'
 
+        // Create a token in order to send POST data.
+
         function getToken(name) {
             var cookieValue = null;
             if (document.cookie && document.cookie !== '') {
@@ -29,6 +31,8 @@
 
         var csrftoken = getToken('csrftoken')
 
+        // Getting cookies when the user is not logged in.
+
         function getCookie(name) {
             // Split cookie string and get all individual name=value pairs in an array
             var cookieArr = document.cookie.split(";");
@@ -44,12 +48,13 @@
                     return decodeURIComponent(cookiePair[1]);
                 }
             }
-
             // Return null if not found
             return null;
         }
 
         var cart = JSON.parse(getCookie('cart'))
+
+        // Create a cookie if it doesn't exist in order to store the products the customer is buying.
 
         if (cart == undefined) {
             cart = {}
